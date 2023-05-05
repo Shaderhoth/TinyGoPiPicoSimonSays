@@ -3,7 +3,6 @@ package main
 import (
 	"image/color"
 	"machine"
-	"math/rand"
 
 	"tinygo.org/x/drivers/st7789"
 )
@@ -70,122 +69,38 @@ func main() {
 	buttony.Configure(machine.PinConfig{
 		Mode: machine.PinInputPullup,
 	})
-	for i := 0; i < 4; i++ {
-		dull(i)
-	}
 
 	buttonb.SetInterrupt(machine.PinFalling|machine.PinRising,
 		func(p machine.Pin) {
 			if p.Get() {
-				release(0)
+				//Release B
 			} else {
-				press(0)
+				//Press B
 			}
 		})
 	buttona.SetInterrupt(machine.PinFalling|machine.PinRising,
 		func(p machine.Pin) {
-			if p.Get() { // up
-				release(1)
+			if p.Get() {
+				//Release A
 			} else {
-				press(1) // down
+				//Press A
 			}
 		})
 	buttony.SetInterrupt(machine.PinFalling|machine.PinRising,
 		func(p machine.Pin) {
 			if p.Get() {
-				release(2)
+				//Release Y
 			} else {
-				press(2)
+				//Press Y
 			}
 		})
 	buttonx.SetInterrupt(machine.PinFalling|machine.PinRising,
 		func(p machine.Pin) {
 			if p.Get() {
-				release(3)
+				//Release X
 			} else {
-				press(3)
+				//Press X
 			}
 		})
-	println("Start")
-	makeQueue()
 
-}
-
-func makeQueue() {
-	println("woo")
-	println("making queue")
-	println("beep boop")
-	queue = make([]int, 0)
-
-	for i := 0; i < level+1; i++ {
-		item := rand.Intn(4)
-		queue = append(queue, item)
-	}
-	println("~")
-	for i, s := range queue {
-		println(i, s)
-	}
-	println("~")
-	for _, v := range queue {
-
-		for i := 0; i < 10; i++ {
-			flash(v)
-		}
-		//time.Sleep(time.Second)
-		dull(v)
-	}
-
-}
-func press(c int) {
-	if alive && len(queue) > 0 {
-		if c == queue[0] {
-			queue = queue[1:]
-			flash(c)
-		} else {
-			display.FillScreen(black)
-			alive = false
-		}
-	} else if !alive {
-		alive = true
-		level = 0
-		for i := 0; i < 4; i++ {
-			dull(i)
-		}
-		makeQueue()
-	}
-
-}
-func release(c int) {
-	if alive {
-		dull(c)
-		if len(queue) == 0 {
-			level += 1
-			makeQueue()
-		}
-	}
-
-}
-
-func flash(c int) {
-	if c == 0 {
-		display.FillRectangle(68, 120, 67, 120, blue)
-	} else if c == 1 {
-		display.FillRectangle(0, 120, 68, 120, yellow)
-	} else if c == 2 {
-		display.FillRectangle(68, 0, 67, 120, red)
-	} else if c == 3 {
-		display.FillRectangle(0, 0, 68, 120, green)
-	}
-
-}
-func dull(c int) {
-	if c == 0 {
-		display.FillRectangle(68, 120, 67, 120, darkblue)
-	} else if c == 1 {
-		display.FillRectangle(0, 120, 68, 120, darkyellow)
-	} else if c == 2 {
-		display.FillRectangle(68, 0, 67, 120, darkred)
-	} else if c == 3 {
-		display.FillRectangle(0, 0, 68, 120, darkgreen)
-	}
 }
